@@ -1,0 +1,7 @@
+{
+  "name": "HydroSense AI - Professional Hydroponics Assistant",
+  "description": "An advanced Hydroponics & Plant Science AI Assistant for plant diagnosis, nutrient management, and expert growth guidance.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

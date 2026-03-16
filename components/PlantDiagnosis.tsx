@@ -2,6 +2,8 @@
 import React, { useState, useRef } from 'react';
 import { analyzePlantImage } from '../services/geminiService';
 import { Language } from '../types';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const PlantDiagnosis: React.FC<{ language: Language }> = ({ language }) => {
   const [image, setImage] = useState<string | null>(null);
@@ -106,7 +108,11 @@ const PlantDiagnosis: React.FC<{ language: Language }> = ({ language }) => {
       {result && (
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm animate-fade-in">
           <h3 className="text-xl font-bold text-slate-800 mb-4">{t.report}</h3>
-          <div className="prose prose-slate max-w-none whitespace-pre-wrap leading-relaxed text-slate-700">{result}</div>
+          <div className="prose prose-emerald max-w-none text-slate-700">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {result}
+            </ReactMarkdown>
+          </div>
         </div>
       )}
     </div>

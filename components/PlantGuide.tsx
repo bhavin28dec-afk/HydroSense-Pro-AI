@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { getPlantGuide } from '../services/geminiService';
 import { Language } from '../types';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const PlantGuide: React.FC<{ language: Language }> = ({ language }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -145,7 +147,11 @@ const PlantGuide: React.FC<{ language: Language }> = ({ language }) => {
               {language === 'hi' ? 'वापस जाएं' : 'Go Back'}
             </button>
           </div>
-          <div className="prose prose-emerald max-w-none whitespace-pre-wrap text-slate-700">{guide}</div>
+          <div className="prose prose-emerald max-w-none text-slate-700">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {guide}
+            </ReactMarkdown>
+          </div>
         </div>
       )}
 

@@ -5,7 +5,9 @@ export enum AppView {
   DIAGNOSIS = 'DIAGNOSIS',
   NUTRIENTS = 'NUTRIENTS',
   CHECKLIST = 'CHECKLIST',
-  ADMIN_SETTINGS = 'ADMIN_SETTINGS'
+  ADMIN_SETTINGS = 'ADMIN_SETTINGS',
+  CROPS = 'CROPS',
+  PEST_CONTROL = 'PEST_CONTROL'
 }
 
 export type Language = 'en' | 'hi';
@@ -17,6 +19,21 @@ export interface UserAccount {
   expiryDate: string; // ISO string
   createdDate: string; // ISO string
   isActive?: boolean;
+}
+
+export interface Crop {
+  id: number;
+  name: string;
+  icon: string;
+  stage: string;
+  plantedDate: string;
+  harvestDate: string;
+  daysLeft: number;
+  progress: number;
+  health: 'excellent' | 'good' | 'fair' | 'poor';
+  system: string;
+  phRange: string;
+  ecRange: string;
 }
 
 export interface NutrientSalt {

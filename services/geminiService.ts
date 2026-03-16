@@ -2,8 +2,42 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { getStaticPlantGuide } from "./staticPlantData";
 
-// @ts-ignore
-const getAi = () => new GoogleGenAI({ apiKey: window.process?.env?.GEMINI_API_KEY || window.process?.env?.API_KEY || process.env.GEMINI_API_KEY || process.env.API_KEY });
+const getAi = async () => {
+  // Try to get the API key from the environment (if injected by Vite or the platform)
+  let apiKey = process.env.GEMINI_API_KEY;
+  
+  // If not found, try to get it from the window object (if injected by /env.js)
+  if (!apiKey && typeof window !== 'undefined' && (window as any).__GEMINI_API_KEY__) {
+    apiKey = (window as any).__GEMINI_API_KEY__;
+  }
+
+  // If still not found, try to fetch it from the backend
+  if (!apiKey) {
+    try {
+      const response = await fetch('/api/config');
+      const data = await response.json();
+      if (data.geminiApiKey) {
+        apiKey = data.geminiApiKey;
+      }
+    } catch (error) {
+      console.error("Failed to fetch API key from backend:", error);
+    }
+  }
+
+  // If the API key is still missing, it means the platform proxy has stripped it.
+  // In this case, we configure the SDK to use the platform proxy endpoint.
+  if (!apiKey) {
+    console.log("API key not found in environment. Falling back to platform proxy.");
+    // The proxy requires a dummy API key to satisfy the SDK's validation
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin + "/api-proxy" : "http://localhost:3000/api-proxy";
+    return new GoogleGenAI({ 
+      apiKey: "proxy-key", 
+      baseURL: baseUrl 
+    });
+  }
+
+  return new GoogleGenAI({ apiKey });
+};
 
 export const analyzePlantImage = async (base64Image: string, lang: 'en' | 'hi') => {
   const model = 'gemini-3-flash-preview';
@@ -30,7 +64,8 @@ export const analyzePlantImage = async (base64Image: string, lang: 'en' | 'hi') 
     },
   };
 
-  const response = await getAi().models.generateContent({
+  const ai = await getAi();
+  const response = await ai.models.generateContent({
     model,
     contents: { parts: [imagePart, { text: prompt }] },
   });
@@ -119,7 +154,8 @@ Explain:
 - how to harvest
 - yield expectations`;
 
-  const response = await getAi().models.generateContent({
+  const ai = await getAi();
+  const response = await ai.models.generateContent({
     model,
     contents: prompt,
   });
@@ -142,7 +178,8 @@ export const getAiNutrientRatios = async (plantName: string, stage: string) => {
   }
   Ensure the values are scientifically accurate for high yield. If a specific salt is not needed, set it to 0.`;
 
-  const response = await getAi().models.generateContent({
+  const ai = await getAi();
+  const response = await ai.models.generateContent({
     model,
     contents: prompt,
     config: { responseMimeType: "application/json" }
@@ -163,7 +200,8 @@ export const askHydroponicExpert = async (question: string, lang: 'en' | 'hi') =
   ${langPrompt} 
   Keep it concise but detailed where needed. Use bullet points.`;
 
-  const response = await getAi().models.generateContent({
+  const ai = await getAi();
+  const response = await ai.models.generateContent({
     model,
     contents: prompt,
   });

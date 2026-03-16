@@ -21,6 +21,8 @@ const DailyChecklist: React.FC<{ language: Language }> = ({ language }) => {
       task3: "Verify Water Temperature",
       task4: "Inspect Roots for slime/browning",
       task5: "Check Pump Flow Rate",
+      savedReadings: "Saved Readings",
+      noReadings: "No readings saved yet today."
     },
     hi: {
       title: "ग्रोथ लॉग 📅",
@@ -39,6 +41,8 @@ const DailyChecklist: React.FC<{ language: Language }> = ({ language }) => {
       task3: "पानी का तापमान देखें",
       task4: "जड़ों की जांच (फफूंद/पीलापन)",
       task5: "पंप फ्लो रेट चेक करें",
+      savedReadings: "सेव की गई रीडिंग",
+      noReadings: "आज कोई रीडिंग सेव नहीं की गई है।"
     }
   }[language];
 
@@ -49,6 +53,10 @@ const DailyChecklist: React.FC<{ language: Language }> = ({ language }) => {
     { id: 4, task: t.task4, done: false, time: t.daily },
     { id: 5, task: t.task5, done: false, time: t.daily },
   ]);
+
+  const [ph, setPh] = useState('');
+  const [ec, setEc] = useState('');
+  const [manualEntries, setManualEntries] = useState<{id: number, ph: string, ec: string, time: string}[]>([]);
 
   // Handle language change for tasks - simple effect to update static labels
   React.useEffect(() => {
@@ -63,6 +71,19 @@ const DailyChecklist: React.FC<{ language: Language }> = ({ language }) => {
 
   const toggleLog = (id: number) => {
     setLogs(logs.map(l => l.id === id ? { ...l, done: !l.done } : l));
+  };
+
+  const handleSaveEntry = () => {
+    if (!ph && !ec) return;
+    const newEntry = {
+      id: Date.now(),
+      ph: ph || '-',
+      ec: ec || '-',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+    setManualEntries([newEntry, ...manualEntries]);
+    setPh('');
+    setEc('');
   };
 
   return (
@@ -113,14 +134,55 @@ const DailyChecklist: React.FC<{ language: Language }> = ({ language }) => {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className="text-xs text-slate-500 font-bold uppercase">{t.phLabel}</label>
-            <input type="number" step="0.1" placeholder="6.0" className="w-full p-2 rounded-lg border border-slate-300 text-sm" />
+            <input 
+              type="number" 
+              step="0.1" 
+              placeholder="6.0" 
+              value={ph}
+              onChange={(e) => setPh(e.target.value)}
+              className="w-full p-2 rounded-lg border border-slate-300 text-sm" 
+            />
           </div>
           <div className="space-y-1">
             <label className="text-xs text-slate-500 font-bold uppercase">{t.ecLabel}</label>
-            <input type="number" step="0.1" placeholder="1.8" className="w-full p-2 rounded-lg border border-slate-300 text-sm" />
+            <input 
+              type="number" 
+              step="0.1" 
+              placeholder="1.8" 
+              value={ec}
+              onChange={(e) => setEc(e.target.value)}
+              className="w-full p-2 rounded-lg border border-slate-300 text-sm" 
+            />
           </div>
         </div>
-        <button className="w-full mt-4 bg-slate-800 text-white py-2 rounded-lg text-sm font-bold">{t.saveBtn}</button>
+        <button 
+          onClick={handleSaveEntry}
+          disabled={!ph && !ec}
+          className="w-full mt-4 bg-slate-800 text-white py-2 rounded-lg text-sm font-bold disabled:opacity-50 hover:bg-slate-700 transition-colors"
+        >
+          {t.saveBtn}
+        </button>
+
+        {manualEntries.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-slate-200">
+            <h4 className="text-sm font-bold text-slate-700 mb-3">{t.savedReadings}</h4>
+            <div className="space-y-2">
+              {manualEntries.map(entry => (
+                <div key={entry.id} className="bg-white p-3 rounded-xl border border-slate-200 flex justify-between items-center shadow-sm">
+                  <div className="flex space-x-4">
+                    <div className="text-xs">
+                      <span className="text-slate-400 font-bold uppercase">pH:</span> <span className="font-bold text-slate-700">{entry.ph}</span>
+                    </div>
+                    <div className="text-xs">
+                      <span className="text-slate-400 font-bold uppercase">EC:</span> <span className="font-bold text-slate-700">{entry.ec}</span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-medium">{entry.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

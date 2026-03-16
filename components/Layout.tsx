@@ -16,10 +16,12 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, setActiveView, la
   const translations = {
     en: {
       DASHBOARD: 'Dashboard',
+      CROPS: 'My Crops',
       PLANT_GUIDE: 'Plant Guide',
       DIAGNOSIS: 'AI Diagnosis',
       NUTRIENTS: 'Nutrients',
       CHECKLIST: 'Daily Log',
+      PEST_CONTROL: 'Pest Control',
       ADMIN_SETTINGS: 'Admin Panel',
       climate: 'Climate',
       subTropical: 'Sub-Tropical (India)',
@@ -27,10 +29,12 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, setActiveView, la
     },
     hi: {
       DASHBOARD: 'डैशबोर्ड',
+      CROPS: 'मेरी फसलें',
       PLANT_GUIDE: 'प्लांट गाइड',
       DIAGNOSIS: 'एआई जांच',
       NUTRIENTS: 'पोषक तत्व',
       CHECKLIST: 'डेली लॉग',
+      PEST_CONTROL: 'कीट नियंत्रण',
       ADMIN_SETTINGS: 'एडमिन पैनल',
       climate: 'जलवायु',
       subTropical: 'उपोष्णकटिबंधीय (भारत)',
@@ -42,9 +46,11 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, setActiveView, la
 
   const navItems = [
     { id: AppView.DASHBOARD, label: t.DASHBOARD, icon: '📊' },
+    { id: AppView.CROPS, label: t.CROPS, icon: '🌿' },
     { id: AppView.PLANT_GUIDE, label: t.PLANT_GUIDE, icon: '🌱' },
     { id: AppView.DIAGNOSIS, label: t.DIAGNOSIS, icon: '🔍' },
     { id: AppView.NUTRIENTS, label: t.NUTRIENTS, icon: '🧪' },
+    { id: AppView.PEST_CONTROL, label: t.PEST_CONTROL, icon: '🐛' },
     { id: AppView.CHECKLIST, label: t.CHECKLIST, icon: '📝' },
   ];
 
